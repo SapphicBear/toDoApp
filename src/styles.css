@@ -1,0 +1,25 @@
+:root {
+    line-height: 1.5;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+}
+.card-area {
+    display: flex;
+    gap: 1rem;
+}
+
+div[class^="todo"] {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+    background: rgb(255, 203, 203);
+    border-radius: 25px;
+    width: 300px;
+
+    & > * {
+        padding: 1rem;
+        border-radius: 25px;
+        background: white;
+    }
+}

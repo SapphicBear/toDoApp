@@ -12,7 +12,13 @@ export class Element{
         } 
             document.querySelector(`.${this.className}`).textContent = this.textContent;
     }
-    
+    makeElementID() {
+        document.querySelector(this.parent).appendChild(document.createElement(this.elementName)).setAttribute("id", `${this.className}`)
+        if (this.textContent == undefined || this.textContent == null) {
+            this.textContent = "";
+        } 
+            document.getElementByID(this.className).textContent = this.textContent;
+    }
 }
 
 export class Button extends Element{
@@ -28,12 +34,12 @@ export class Button extends Element{
     }
 }
 
-export class ToDoCard extends Element {
-    constructor() {
+export class Checkbox extends Element {
+    constructor(parent, className) {
         super();
-        this.elementName = "div";
-        this.parent = ".todo-card-area"
-        this.className = "todo-card";
-        this.textContent = "";
+        this.elementName = "input"
+        this.parent = parent;
+        this.className = className;
+        this.style = "type", "checkbox";
     }
 }

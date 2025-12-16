@@ -6,18 +6,62 @@ import { Button, Element, Checkbox } from "./DOM.js";
 console.log("Javascript connected!");
 
 
-function getToDoDB() {
-    // Function to check and fetch data if JSON is saved! Will go on to the getToDo() if it finds nothing, it exits. If it finds it, it uses the getToDo to write to screen
+function saveData(name, obj) {
+    localStorage.setItem(name, JSON.stringify(obj));
+}
+function checkData() {
+        const allKeys = Object.keys(localStorage);
+        console.log(allKeys);
+        return allKeys;
+}
+function getData() {
+    let data;
+    if (localStorage.length == 0) {
+        return data = 0;
+    } else {
+        data = [];
+        let allKeys = checkData();
+        for (let i = 0; i < allKeys.length; i++) {
+            data.push(JSON.parse(localStorage.getItem(allKeys[i])));
+        }
+        return data;
+    }
 }
 
-function getToDo(title, description, date, importance, checklist, note) {
-    const toDo = new ToDo(title, description, format(new Date(date), "dd.MM.yyyy"), importance);
-    if (checklist) {
-        toDo.checklist.push(checklist);
+
+function initialRun() {
+    let data = getData();
+    if (data == 0) {
+        console.log("No files found");
+        return;
+    } else {
+        console.log(data.length)
+        console.log(data)
+        if (data.length == 1) {
+            createCard(`${data[0].title}-card`, getToDo(data[0]));
+            console.log("drawing once");
+        } else if (data.length > 1) {
+            for (let i = data.length - 1; i >= 0; i--) {
+            createCard(`card-${data[i].title}`, getToDo(data[i]))
+            console.log("drawing cards found in localStorage")
+            }
+        }
     }
-    if (note) {
-        toDo.notes.push(note);
-    }
+    
+}
+
+
+function getToDo(obj) {
+    const toDo = new ToDo(obj.title, obj.description, obj.dueDate, obj.importance);
+    obj.checklist.forEach((item) => {
+        toDo.checklist.push(item);
+    })
+    obj.notes.forEach((item) => {
+        toDo.notes.push(item);
+    })
+    console.log(toDo)
+        toDo.dueDate = format(new Date(obj.dueDate), "dd.MM.yyyy");
+        console.log("formating date");
     return toDo
 }
 
@@ -36,42 +80,20 @@ function createCard(name, fun) {
     todoCard.forEach((item) => {
         item.makeElement();
     })
-  
-    try {
-        let noteCount = 0;
-        fun.notes[0].forEach((item) => {
-            let li = new Element("li", `.${name}-notes`, `${name}-note-${noteCount}`, item);
-            let xButton = new Button(`.${name}-note-${noteCount}`, `${name}button-${noteCount}`, "x");
-            li.makeElement();
-            xButton.makeElement();
-            ++noteCount;
-    })
-    }
-    catch{
+  if (!fun.notes.length == 0) {
+    
         let noteCount = 0;
         fun.notes.forEach((item) => {
             let li = new Element("li", `.${name}-notes`, `${name}-note-${noteCount}`, item);
             let xButton = new Button(`.${name}-note-${noteCount}`, `${name}button-${noteCount}`, "x");
             li.makeElement();
             xButton.makeElement();
-        })
-    }
-    try {
-        let checkCount = 0;
-        fun.checklist[0].forEach((item) => {
-            const li = new Element("li", `.${name}-checklist-area`, `${name}-checklist-${checkCount}`, item)
-            const checkmark = new Checkbox(`.${name}-checklist-${checkCount}`, `${name}-checkbox-${checkCount}`)
-            
-            li.makeElement();
-            checkmark.makeElement();
-            const checkbox = document.querySelector(`.${name}-checkbox-${checkCount}`);
-            checkbox.setAttribute("id", `${name}-checkbox-${checkCount}`);
-            checkbox.setAttribute("type", "checkbox");
-            checkbox.removeAttribute("class");
-            ++checkCount;
-        })
-    }
-    catch {
+            ++noteCount;
+    })
+} else {
+    console.log("No items in notes");
+  
+} if (!fun.checklist.length == 0) {
         let checkCount = 0;
         fun.checklist.forEach((item) => {
             const li = new Element("li", `.${name}-checklist-area`, `${name}-checklist-${checkCount}`, item)
@@ -83,8 +105,25 @@ function createCard(name, fun) {
             checkbox.setAttribute("id", `${name}-checkbox-${checkCount}`);
             checkbox.setAttribute("type", "checkbox");
             checkbox.removeAttribute("class");
-    })
-    
-}}
-createCard("todo1", getToDo("Stinky", "sdngmlksdjfnmglkdflg", "2026, 12, 01", "true", ["Need to do this soon!", "make out with wife"], ["Hi HI hi!", "Note 2"]));
-createCard("todo2", getToDo("Farting all the time", "Stinkying adsift ksmdfglksdfnmgsdflkasdfjnmg", "2026, 12, 02", "false", ["lsdfkmgsdkfmg", "sdfoginsdlfkgjnsdlfkg", "sflkgmsdlfkgm"], "stkmgdlfkgm"));
+            ++checkCount;
+        })
+} else {
+    console.log("No items in checklsit.");
+}
+} 
+
+
+const myObj = {
+    title: "Stinky",
+    description: "Fart",
+    dueDate: "2025, 11, 2",
+    importance: true,
+    checklist: [
+        "stinky",
+        "Stinky"
+    ],
+    notes: [
+        "I am very stinky",
+    ],
+}
+initialRun();

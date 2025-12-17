@@ -22,6 +22,65 @@ a {
 li {
     list-style: none;
 }
+form,
+input,
+textarea {
+    font-family: inherit;
+}
+
+.user-input-form {
+    display: grid;
+    position: relative;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1rem;
+
+    > button {
+        padding: 1rem;
+    }
+    > .close-button {
+        position: absolute;
+        margin: 0;
+        padding: 0.5rem;
+        top:0;
+        right:0;
+        outline: none;
+        border: none;
+        color: red;
+        font-weight: 800;
+        font-size: 20px;
+    }
+}
+.user-input-area {
+    display: grid;
+    gap: 1rem;
+    > div {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(20ch, 30ch));
+        gap: 1rem;
+    }
+}
+.notes-area-div {
+    background: rgb(247, 175, 175);
+    height: 100px;
+    max-width: 30ch;
+    overflow-y: scroll;
+
+    > .notes-area {
+        display: flex;
+        padding-left: 0.3rem;
+        flex-direction: column;
+        gap: 0.2rem;
+        flex-wrap: wrap;
+        
+        > li {
+            display: flex;
+            justify-content: space-between;
+            margin-right: 1rem;
+        }
+    }
+}
+
 .wrapper {
     display: grid;
     gap: 0 2rem;
@@ -85,7 +144,7 @@ li {
     gap: 1rem;
     margin-top: 1rem;;
     align-items: flex-start;
-    justify-content: space-between;
+    justify-content: space-evenly;
     
     > div {
         box-shadow: rgba(160, 0, 107, 0.616) 0 5px 10px;

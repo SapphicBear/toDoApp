@@ -19,6 +19,10 @@ export class Element{
         } 
             document.getElementByID(this.className).textContent = this.textContent;
     }
+
+    editTextContent(textContent) {
+        this.textContent = textContent;
+    }
 }
 
 export class Button extends Element{

@@ -10,7 +10,13 @@ export class Element{
         if (this.textContent == undefined || this.textContent == null) {
             this.textContent = "";
         } 
+        try {
             document.querySelector(`.${this.className}`).textContent = this.textContent;
+        }
+        catch {
+            console.error("no idea")
+        }
+            
     }
     makeElementID() {
         document.querySelector(this.parent).appendChild(document.createElement(this.elementName)).setAttribute("id", `${this.className}`)

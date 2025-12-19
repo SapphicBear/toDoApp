@@ -7,13 +7,13 @@ import { Button, Element, Checkbox } from "./DOM.js";
 
 console.log("Javascript connected!");
 let cardBody = [];
-
+let madeCards = [];
 
 class ToDoCard {
     constructor(name, obj) {
         this.name = name.replaceAll(/\s/g,'');
         this.obj = this.getToDo(obj);
-        this.card = new Element("div", ".card-area", `todo-${this.name}`);
+        this.card = new Element("div", ".card-area", `todo-${this.name}`, "", "inactive");
         this.title = new Element("h3", `.todo-${this.name}`, `${this.name}-title`, this.obj.title);
         this.desc = new Element("p", `.todo-${this.name}`, `${this.name}-description`, this.obj.description);
         this.dueDate = new Element("p", `.todo-${this.name}`, `${this.name}-due-date`, this.obj.dueDate);
@@ -126,19 +126,16 @@ const eventListeners = {
     initialRun();
     },
 
-    openCard() {
-        let active = document.getElementById("active");
+    openCard(item) {
+        let active = item;
         console.log(active);
-        cardBody.forEach((item) => {
-            if ("todo-" + item.name === active.className)  {
-            let newCard = new ToDoCard(item.name, item.obj)
-            newCard.renderFullCard();
-            document.querySelector(`.todo-${item.name}`).setAttribute("id", "active");
-            console.log("complete")
-            let extras = document.querySelectorAll(`.todo-${item.name}`);
-                extras.forEach((item) => {
-                    if (item.id == "") {
-                        item.remove();
+        cardBody.forEach((card) => {
+            if ("todo-" + card.name === active.classList[0])  {
+                card.renderFullCard();
+            let extras = document.querySelectorAll(`.todo-${card.name}`);
+                extras.forEach((extra) => {
+                    if (!extra.classList.contains("_active")) {
+                        extra.remove();
                     } else {
                         return;
                     }
@@ -147,37 +144,43 @@ const eventListeners = {
             })
     },
     
-    closeCard() {
-        let inactive = document.getElementById("inactive");
+    closeCard(item) {
+        let inactive = item;
         console.log(inactive);
-        cardBody.forEach((item) => {
-            if ("todo-" + item.name === inactive.className)  {
-            let newCard = new ToDoCard(item.name, item.obj)
-            inactive.remove();
-            newCard.renderShortCard();
-            document.querySelector(`.todo-${item.name}`).setAttribute("id", "inactive");
-            console.log("complete")
-            } 
+        cardBody.forEach((card) => {
+            if ("todo-" + card.name === inactive.classList[0])  {
+                card.renderShortCard();
+                console.log("rendered")
+                let extras = document.querySelectorAll(`.todo-${card.name}`);
+                extras.forEach((extra) => {
+                    if (!extra.classList.contains("_inactive")) {
+                        extra.remove();
+                    } else {
+                        return;
+                    }  
             })
+            
+            }})
     },
 
     cardHandler(item) {
-        if (item.id == "") {
-            this.setCardAsActive(item)
-            this.openCard();
-            cardListener();
-        } else if (item.id === "active") { 
+        if (item.classList.contains("_active")) { 
             this.setCardInactive(item);
-        } else if (item.id === "inactive") {
-            initialRun();
+            this.closeCard(item);
+        } else if (item.classList.contains("_inactive")) {
+            this.setCardAsActive(item);
+            this.openCard(item);
         }
     },
 
     setCardAsActive(item) {
-        item.setAttribute("id", "active");
+        console.log(item)
+        item.classList.replace("_inactive", "_active");
+        
     },
     setCardInactive(item) {
-        item.setAttribute("id", "inactive")
+        console.log(item)
+        item.classList.replace("_active", "_inactive");
     },
     
 }
@@ -207,12 +210,11 @@ const eventListeners = {
 
 function cardListener() {
     let cards = document.querySelectorAll(`.card-area > div[class^="todo"]`);
-    cards.forEach((item) => {
-        console.log(cards)
-        item.addEventListener("click", function () {
-            eventListeners.cardHandler(item);
+    for (let i = 0; i < cards.length; i++) {
+        cards[i].addEventListener("click", function () {
+            eventListeners.cardHandler(cards[i])
         })
-})
+    }
 }
 
 const userInput = {
@@ -241,16 +243,22 @@ function initialRun() {
             card.renderShortCard();
             console.log("drawing once");
             cardBody.push(card);
-            cardListener();            
+            let cards = document.querySelectorAll(`.card-area > div[class^="todo"]`);
+            cards.classList.add("_inactive");           
         } else if (data.length > 1) {
             for (let i = data.length - 1; i >= 0; i--) {
                 let card = new ToDoCard(`${data[i].title}-card`, data[i])
                 card.renderShortCard();
                 console.log("drawing cards found in localStorage")
                 cardBody.push(card);
-                cardListener();
+                let cards = document.querySelectorAll(`.card-area > div[class^="todo"]`);
+                cards.forEach((item) => {
+                    item.classList.add("_inactive")
+                })
+                
             }
         }
+        cardListener();
     }
 }
 

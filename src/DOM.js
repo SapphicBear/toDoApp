@@ -1,9 +1,10 @@
 export class Element{
-    constructor(elementName, parent, className, textContent) {
+    constructor(elementName, parent, className, textContent, id) {
         this.elementName = elementName;
         this.parent = parent;
         this.className = className;
         this.textContent = textContent;
+        this.id = id;
     }
     makeElement() {
         document.querySelector(this.parent).appendChild(document.createElement(this.elementName)).className = this.className;

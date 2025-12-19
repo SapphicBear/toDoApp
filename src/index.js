@@ -13,7 +13,7 @@ class ToDoCard {
     constructor(name, obj) {
         this.name = name.replaceAll(/\s/g,'');
         this.obj = this.getToDo(obj);
-        this.card = new Element("div", ".card-area", `todo-${this.name}`, "", "inactive");
+        this.card = new Element("div", ".card-area", `todo-${this.name}`);
         this.title = new Element("h3", `.todo-${this.name}`, `${this.name}-title`, this.obj.title);
         this.desc = new Element("p", `.todo-${this.name}`, `${this.name}-description`, this.obj.description);
         this.dueDate = new Element("p", `.todo-${this.name}`, `${this.name}-due-date`, this.obj.dueDate);
@@ -105,30 +105,30 @@ const eventListeners = {
 
     submitData() {
         let title, description, dueDate, importance;
-    let checklist = [];
-    let notes = [];
-    title = document.getElementById("title").value;
-    description = document.getElementById("description").value;
-    dueDate = format(new Date(document.getElementById("due-date").value), "dd.MM.yyyy");
-    importance = document.getElementById("importance").value;
-    notes = document.querySelectorAll(`ul > li > p`);
+        let checklist = [];
+        let notes = [];
+            title = document.getElementById("title").value;
+            description = document.getElementById("description").value;
+            dueDate = format(new Date(document.getElementById("due-date").value), "dd.MM.yyyy");
+            importance = document.getElementById("importance").value;
+            notes = document.querySelectorAll(`ul > li > p`);
 
-    userInput.title = title;
-    userInput.description = description;
-    userInput.dueDate = dueDate;
-    userInput.importance = importance;
-    notes.forEach((item) => {
-        userInput.notes.push(item.textContent);
-    })
-    console.log(userInput);
-    const card = new ToDoCard("NewCard", userInput);
-    dataBase.saveData(card.obj.title, card.obj);
-    initialRun();
+            userInput.title = title;
+            userInput.description = description;
+            userInput.dueDate = dueDate;
+            userInput.importance = importance;
+            notes.forEach((item) => {
+                userInput.notes.push(item.textContent);
+            })
+                console.log(userInput);
+            const card = new ToDoCard("NewCard", userInput);
+            dataBase.saveData(card.obj.title, card.obj);
+            initialRun();
     },
 
     openCard(item) {
         let active = item;
-        console.log(active);
+        
         cardBody.forEach((card) => {
             if ("todo-" + card.name === active.classList[0])  {
                 card.renderFullCard();
@@ -146,11 +146,10 @@ const eventListeners = {
     
     closeCard(item) {
         let inactive = item;
-        console.log(inactive);
+        
         cardBody.forEach((card) => {
             if ("todo-" + card.name === inactive.classList[0])  {
                 card.renderShortCard();
-                console.log("rendered")
                 let extras = document.querySelectorAll(`.todo-${card.name}`);
                 extras.forEach((extra) => {
                     if (!extra.classList.contains("_inactive")) {
@@ -164,31 +163,41 @@ const eventListeners = {
     },
 
     cardHandler(item) {
-        if (item.classList.contains("_active")) { 
+        try {
+            if (item.classList.contains("_active")) { 
             this.setCardInactive(item);
             this.closeCard(item);
+            cardListener();
         } else if (item.classList.contains("_inactive")) {
             this.setCardAsActive(item);
             this.openCard(item);
+            cardListener();
+        }
+        }
+        catch {
+            console.log("ignore this bug")
         }
     },
 
     setCardAsActive(item) {
-        console.log(item)
+        
         item.classList.replace("_inactive", "_active");
         
     },
     setCardInactive(item) {
-        console.log(item)
+        
         item.classList.replace("_active", "_inactive");
     },
     
 }
     const openModal = document.querySelector(".open-button");
-    const closeModal = document.querySelector(".close-button");
+    const closeModal = document.querySelector(".close-button.modal");
     const submitButton = document.querySelector(".submit-button");
     const addNoteButton = document.querySelector(".add-note");
     const modal = document.querySelector(".modal");
+    const projectButton = document.querySelector(".new-project")
+    const projectModal = document.querySelector(".project-modal")
+    const projectModalClose = document.querySelector(".close-button.project-modal")
 
     openModal.addEventListener("click", () => {
         modal.showModal();
@@ -208,11 +217,19 @@ const eventListeners = {
             modal.close();
 })
 
+projectButton.addEventListener("click", function () {
+    projectModal.showModal();
+})
+projectModalClose.addEventListener("click", function () {
+    projectModal.close();
+})
+
 function cardListener() {
-    let cards = document.querySelectorAll(`.card-area > div[class^="todo"]`);
+    let cards = document.querySelectorAll(`.card-area > div[class^="todo"] > h3`);
+    
     for (let i = 0; i < cards.length; i++) {
         cards[i].addEventListener("click", function () {
-            eventListeners.cardHandler(cards[i])
+            eventListeners.cardHandler(cards[i].parentElement)
         })
     }
 }

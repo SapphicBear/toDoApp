@@ -6,9 +6,26 @@
     <title>To-Do App</title>
 </head>
 <body>
+
+    <dialog class="project-modal" id="project-modal">
+        <button class="close-button project-modal" type="button">X</button>
+        <h2>New Project</h2>
+        <form action="">
+            <div class="project-input">
+                <label for="project-name">Project Name</label>
+                <input type="text" name="project-name" id="project-name" required>
+            </div>
+            <div class="project-color">
+                <label for="project-color">Color</label>
+                <input type="color" name="project-color" id="project-color">
+            </div>
+        </form>
+
+    </dialog>
+
     <dialog class="modal" id="modal">
         <div class="user-input-form">
-            <button class="close-button" type="button">X</button>
+            <button class="close-button modal" type="button">X</button>
             <h2>To Do</h2>
             <form action="">
                 <div class="user-input-area">
@@ -57,16 +74,16 @@
                 <a href="#">links</a>
             </div>
         </div>
-        <div class="projects">
-            <h4>My projects</h4>
-            <div class="projects-area">
-                    
-            </div>
-                
-        </div>
         <div class="button-area">
             <button class="open-button">New ToDo</button>
+            <button class="new-project" type="button">New Project</button>
         </div>
+        <div class="projects">
+            <h4>My projects</h4>
+        </div>
+        <div class="projects-area">
+                    
+            </div>
     </div>
     <div class="card-area">
  

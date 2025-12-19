@@ -123,20 +123,13 @@ textarea {
     position: relative;
     background: pink;
     width: stretch;
-
-    &::after {
-        content: "V";
-        font-weight: 800;
-        font-size: 20px;
-        position: absolute;
-        top: 0.8rem;
-        right: 1.2rem;
-    }
-    .projects-area {
+}
+.projects-area {
         background: white;
+        height: stretch;
+        margin-bottom: 1rem;
         
     }
-}
 
 .card-area {
     display: flex;
@@ -160,6 +153,10 @@ div[class^="todo"] {
     background: rgb(255, 203, 203);
     border-radius: 25px;
     width: 300px;
+
+    > h3:hover {
+        background: rgb(255, 146, 210);
+    }
 
     & > p[class$="description"] {
         grid-column: 1 / span 2;

@@ -5,12 +5,14 @@ export class ToDo {
         this.description = description;
         this.dueDate = dueDate;
         this.importance = importance;
+        this.id = "";
     }
     creationDate = format(new Date(), "dd.MM.yyyy - kk:mm")
     delete = false;
     notes = [];
     checklist = [];
     project = [];
+
 
     setImportance() {
         if (this.importance == true) {

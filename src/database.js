@@ -2,6 +2,23 @@ export const dataBase = {
     saveData(name, obj) {
     localStorage.setItem(name, JSON.stringify(obj));
 },
+    deleteData(name) {
+        localStorage.removeItem(name);
+    },
+
+    overrideData(name, obj) {
+        let keys = this.checkData();
+        for (let i = 0; i < keys.length; i++) {
+            console.log(keys)
+            console.log(name)
+            if (keys[i] == name) {
+                console.log("found")
+                this.deleteData(keys[i]);
+                this.saveData(name, obj)
+            }
+        }
+    },
+
 
     checkData() {
         const allKeys = Object.keys(localStorage);

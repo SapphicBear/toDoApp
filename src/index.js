@@ -1,5 +1,5 @@
 import "./styles.css";
-import { format, intervalToDuration, isThisQuarter } from "date-fns";
+import { format, toDate } from "date-fns";
 import { ToDo } from "./todos.js";
 import { Project } from "./projects.js";
 import { dataBase } from "./database.js";
@@ -7,6 +7,7 @@ import { Button, Element, Checkbox } from "./DOM.js";
 
 console.log("Javascript connected!");
 let cardBody = [];
+let key = localStorage.length;
 let projects = [];
 let currentProject = ""
 const userInput = {
@@ -27,10 +28,11 @@ class ToDoCard {
         this.card = new Element("div", ".card-area", `todo-${this.name}`);
         this.title = new Element("h3", `.todo-${this.name}`, `${this.name}-title`, this.obj.title);
         this.desc = new Element("p", `.todo-${this.name}`, `${this.name}-description`, this.obj.description);
-        this.dueDate = new Element("p", `.todo-${this.name}`, `${this.name}-due-date`, this.obj.dueDate);
+        this.dueDate = new Element("p", `.todo-${this.name}`, `${this.name}-due-date`, format(new Date(this.obj.dueDate), "dd.MM.yyyy"));
         this.importance = new Element("h4", `.todo-${this.name}`, `${this.name}-importance`, this.obj.importance);
         this.notesArea = new Element("ul", `.todo-${this.name}`, `${this.name}-notes`);
         this.checklist = new Element("ul", `.todo-${this.name}`, `${this.name}-checklist-area`);
+        this.editButton = new Button(`.todo-${this.name}`, `todo-${this.name}-editButton`, "Edit");
     }
     toDoCard = [];
     project = [];
@@ -56,7 +58,7 @@ class ToDoCard {
     }
 
     renderFullCard() {
-        this.toDoCard.push(this.card, this.title, this.desc, this.dueDate, this.importance, this.notesArea, this.checklist);
+        this.toDoCard.push(this.card, this.title, this.desc, this.dueDate, this.importance, this.notesArea, this.checklist, this.editButton);
         this.toDoCard.forEach((item) => {
             item.makeElement();
         })
@@ -96,9 +98,15 @@ class ToDoCard {
 
 let num = 1;
 const eventListeners = {
-    addNote() {
+    addNote(arg) {
+        if (arg == "") {
+            arg = document.getElementById("notes").value;
+        } else {
+            arg = arg;
+        }
+        
         const li = new Element("li", `ul.notes-area`, `note-item-${num}`, "");
-        const para = new Element("p", `.note-item-${num}`, `para${num}`, document.getElementById("notes").value);
+        const para = new Element("p", `.note-item-${num}`, `para${num}`, arg);
         const xButton = new Button(`.note-item-${num}`, `note-item-${num}-xButton`, "X");
 
         li.makeElement();
@@ -118,13 +126,17 @@ const eventListeners = {
         })
     },
 
+    compareData() {
+
+    },
+
     submitData() {
         let title, description, dueDate, importance;
         let checklist = [];
         let notes = [];
             title = document.getElementById("title").value;
             description = document.getElementById("description").value;
-            dueDate = format(new Date(document.getElementById("due-date").value), "dd.MM.yyyy");
+            dueDate = format(new Date(document.getElementById("due-date").value), "yyyy-MM-dd");
             importance = document.getElementById("importance").value;
             notes = document.querySelectorAll(`ul > li > p`);
 
@@ -137,20 +149,23 @@ const eventListeners = {
             })
             userInput.project = `${currentProject}`;
                 console.log(userInput);
-            const card = new ToDoCard("NewCard", userInput);
-            dataBase.saveData(card.obj.title, card.obj);
+            const card = new ToDoCard(userInput.title, userInput);
+            card.obj.id = key;
+            dataBase.saveData(`key${card.obj.id}`, card.obj);
             initialRun();
+            ++key;
     },
 
     openCard(item) {
         let active = item;
-        
         cardBody.forEach((card) => {
             if ("todo-" + card.name === active.classList[0])  {
                 card.renderFullCard();
+                toDoCardListener(active.children[6], card.obj);
             let extras = document.querySelectorAll(`.todo-${card.name}`);
+            console.log(extras)
                 extras.forEach((extra) => {
-                    if (!extra.classList.contains("_active")) {
+                    if (!extra.className.includes("_active")) {
                         extra.remove();
                     } else {
                         return;
@@ -162,11 +177,13 @@ const eventListeners = {
     
     closeCard(item) {
         let inactive = item;
-        
+        console.log(inactive.classList[0])
         cardBody.forEach((card) => {
-            if ("todo-" + card.name === inactive.classList[0])  {
+            console.log(card.name)
+            if (inactive.className.includes(`todo-${card.name}`))  {
                 card.renderShortCard();
                 let extras = document.querySelectorAll(`.todo-${card.name}`);
+                console.log(extras)
                 extras.forEach((extra) => {
                     if (!extra.classList.contains("_inactive")) {
                         extra.remove();
@@ -179,12 +196,13 @@ const eventListeners = {
     },
 
     cardHandler(item) {
+        
         try {
-            if (item.classList.contains("_active")) { 
+            if (item.className.includes("_active")) { 
             this.setCardInactive(item);
             this.closeCard(item);
             cardListener();
-        } else if (item.classList.contains("_inactive")) {
+        } else if (item.className.includes("_inactive")) {
             this.setCardAsActive(item);
             this.openCard(item);
             cardListener();
@@ -206,6 +224,16 @@ const eventListeners = {
     },
     
 }
+
+function toDoCardListener(obj, todo) {
+    const toDoCardEditButton = obj;
+    toDoCardEditButton.addEventListener("click", function () {
+        document.querySelector(".submit-button").classList.add("edit");
+    editToDo(todo);
+    
+})
+}
+
     const openModal = document.querySelector(".open-button");
     const closeModal = document.querySelector(".close-button.modal");
     const submitButton = document.querySelector(".submit-button");
@@ -215,11 +243,14 @@ const eventListeners = {
     const projectModal = document.querySelector(".project-modal")
     const projectModalClose = document.querySelector(".close-button.project-modal")
     const projectModalSubmit = document.querySelector(".project-modal-submit");
+    
+    
     openModal.addEventListener("click", () => {
         modal.showModal();
 })
     
     closeModal.addEventListener("click", () => {
+        clearModal();
         modal.close();
 
 })
@@ -228,8 +259,7 @@ const eventListeners = {
         eventListeners.deleteNoteButton();
     });
 
-    submitButton.addEventListener("click", () => {
-        eventListeners.submitData();
+    function clearModal() {
             document.getElementById("title").value = "";
             document.getElementById("description").value = "";
             document.getElementById("due-date").value = "";
@@ -238,7 +268,13 @@ const eventListeners = {
             document.querySelectorAll(`ul.notes-area > li`).forEach((item) => {
                 item.remove();
             });
-            modal.close();
+    }
+    submitButton.addEventListener("click", () => {
+        if (submitButton.classList.contains("edit")) {
+            return;
+        } eventListeners.submitData();
+        clearModal();
+        modal.close();
 })
 
 projectButton.addEventListener("click", function () {
@@ -254,6 +290,39 @@ projectModalSubmit.addEventListener("click", function () {
     projectModal.close();
     projectListener();
 })
+
+function editToDo(todo) {
+    console.log(todo)
+    console.log(todo.dueDate)
+    console.log(todo.id)
+    const currentId = todo.id;
+    let title, description, dueDate, importance, id;
+        let checklist = [];
+        let notes = [];
+            title = todo.title;
+            description = todo.description;
+            dueDate = todo.dueDate
+            console.log(dueDate)
+            importance = todo.importance;
+            notes = todo.notes;
+            todo.id = currentId;
+            console.log(dueDate)
+            document.getElementById("title").value = title;
+            document.getElementById("description").value = description;
+            document.getElementById("due-date").value = dueDate;
+            document.getElementById("importance").value = importance;
+            todo.notes.forEach((note)=> {
+            eventListeners.addNote(note);
+            eventListeners.deleteNoteButton();
+            })
+    modal.showModal();
+    const editSubmitButton = document.querySelector(".submit-button.edit")
+    editSubmitButton.addEventListener("click", function () {
+        console.log("hi")
+        modal.close();
+    })
+}
+
 
 function projectListener() {
     const projectArea = document.querySelectorAll(`.project-area-ul > li`)
@@ -307,7 +376,6 @@ function renderProject(project) {
         li.makeElement();
         span.makeElement();
         document.querySelector(`.project-color-${projectNum}-${project.name}`).style.backgroundColor = `${project.color}`
-        // projectListener()
     }
 }
 
@@ -408,6 +476,7 @@ function initialRun() {
 
 
 initialRun();
+key = cardBody.length;
 console.log(cardBody)
 console.log(projects)
 console.log(currentProject);

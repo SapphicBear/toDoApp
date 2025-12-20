@@ -10,6 +10,7 @@ export class ToDo {
     delete = false;
     notes = [];
     checklist = [];
+    project = [];
 
     setImportance() {
         if (this.importance == true) {

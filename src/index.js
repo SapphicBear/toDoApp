@@ -7,7 +7,18 @@ import { Button, Element, Checkbox } from "./DOM.js";
 
 console.log("Javascript connected!");
 let cardBody = [];
-let madeCards = [];
+let projects = [];
+let currentProject = ""
+const userInput = {
+    title:"", 
+    description:"",
+    dueDate:"",
+    importance: false,
+    checklist: [],
+    notes: [],
+    project: "",
+}
+
 
 class ToDoCard {
     constructor(name, obj) {
@@ -22,6 +33,7 @@ class ToDoCard {
         this.checklist = new Element("ul", `.todo-${this.name}`, `${this.name}-checklist-area`);
     }
     toDoCard = [];
+    project = [];
 
     getToDo(obj) {
     const toDo = new ToDo(obj.title, obj.description, obj.dueDate, obj.importance);
@@ -32,6 +44,7 @@ class ToDoCard {
         toDo.notes.push(item);
     })
     toDo.dueDate = obj.dueDate;
+    toDo.project = obj.project;
     return toDo;
 }
 
@@ -50,6 +63,7 @@ class ToDoCard {
         if (!this.obj.notes.length == 0) {
         let noteCount = 0;
         this.obj.notes.forEach((item) => {
+            this.name.replaceAll(/\s/g,'');
             let li = new Element("li", `.${this.name}-notes`, `${this.name}-note-${noteCount}`, item);
             let xButton = new Button(`.${this.name}-note-${noteCount}`, `${this.name}button-${noteCount}`, "x");
             li.makeElement();
@@ -62,6 +76,7 @@ class ToDoCard {
     } if (!this.obj.checklist.length == 0) {
         let checkCount = 0;
         this.obj.checklist.forEach((item) => {
+            this.name.replaceAll(/\s/g,'');
             const li = new Element("li", `.${this.name}-checklist-area`, `${this.name}-checklist-${checkCount}`,`${item}`);
             const checkmark = new Checkbox(`.${this.name}-checklist-${checkCount}`, `${this.name}-checkbox-${checkCount}`);
             
@@ -120,6 +135,7 @@ const eventListeners = {
             notes.forEach((item) => {
                 userInput.notes.push(item.textContent);
             })
+            userInput.project = `${currentProject}`;
                 console.log(userInput);
             const card = new ToDoCard("NewCard", userInput);
             dataBase.saveData(card.obj.title, card.obj);
@@ -198,7 +214,7 @@ const eventListeners = {
     const projectButton = document.querySelector(".new-project")
     const projectModal = document.querySelector(".project-modal")
     const projectModalClose = document.querySelector(".close-button.project-modal")
-
+    const projectModalSubmit = document.querySelector(".project-modal-submit");
     openModal.addEventListener("click", () => {
         modal.showModal();
 })
@@ -214,6 +230,14 @@ const eventListeners = {
 
     submitButton.addEventListener("click", () => {
         eventListeners.submitData();
+            document.getElementById("title").value = "";
+            document.getElementById("description").value = "";
+            document.getElementById("due-date").value = "";
+            document.getElementById("importance").value = "";
+            document.getElementById("notes").value = "";
+            document.querySelectorAll(`ul.notes-area > li`).forEach((item) => {
+                item.remove();
+            });
             modal.close();
 })
 
@@ -224,6 +248,37 @@ projectModalClose.addEventListener("click", function () {
     projectModal.close();
 })
 
+projectModalSubmit.addEventListener("click", function () {
+    const project = createProject(document.getElementById("project-name").value, document.getElementById("project-color").value);
+    renderProject(project);
+    projectModal.close();
+    projectListener();
+})
+
+function projectListener() {
+    const projectArea = document.querySelectorAll(`.project-area-ul > li`)
+
+    for (let i = 0; i < projectArea.length; i++) {
+        projectArea[i].addEventListener("click", function () {
+            projectHandler(projectArea[i]);
+        })
+    }
+}
+
+function projectHandler(item) {
+    projects.forEach((project) => {
+        if (item.className.includes(`${project.name}`)) {
+            currentProject = `${project.name}`;
+            console.log(`Selected: ${project.name}`)
+            deleteAllCards();
+            changePage(project);
+        } else {
+            cardListener();
+            return;
+        }
+    })
+}
+
 function cardListener() {
     let cards = document.querySelectorAll(`.card-area > div[class^="todo"] > h3`);
     
@@ -233,52 +288,126 @@ function cardListener() {
         })
     }
 }
-
-const userInput = {
-    title:"", 
-    description:"",
-    dueDate:"",
-    importance: false,
-    checklist: [],
-    notes: [],
+let projectNum = 1;
+function createProject(name, color) {
+    const project = new Project(name, color);
+        console.log("Project made!");
+    projects.push(project);
+    dataBase.saveData(`${project.name}`, project)
+    return project;
 }
 
+function renderProject(project) {
+    ++projectNum
+    let li = new Element("li", ".project-area-ul", `project-${projectNum}-${project.name}`, `${project.name}`);
+    if (!project.color) {
+         li.makeElement();
+    } else {
+        let span = new Element("span", `.project-${projectNum}-${project.name}`, `project-color-${projectNum}-${project.name}`);
+        li.makeElement();
+        span.makeElement();
+        document.querySelector(`.project-color-${projectNum}-${project.name}`).style.backgroundColor = `${project.color}`
+        // projectListener()
+    }
+}
 
-function initialRun() {
-    let cards = document.querySelectorAll(`.card-area > div[class^="todo"]`);
-        cards.forEach((item) => {
+function deleteAllCards() {
+    let cards = document.querySelectorAll(`.card-area > div[class^="todo"]`);    
+    cards.forEach((item) => {
             item.remove();
         })
+}
+
+function changePage(project) {
     let data = dataBase.getData();
-    console.log(data.length)
+    console.log(`Data Length: ${data.length}`)
     if (data == 0) {
         console.log("No files found");
+            cardListener();
+            projectListener()
+        return;
+    }
+    console.log(data)
+    for (let i = data.length - 1; i >= 0; i--) {
+        if (data[i].project === project.name) {
+            let card = new ToDoCard(`${data[i].title}-card`, data[i])
+                card.renderShortCard();
+                let cards = document.querySelectorAll(`.card-area > div[class^="todo"]`);
+                        cards.forEach((item) => {
+                            item.classList.add("_inactive")})
+        }
+    } 
+    cardListener();
+}
+
+function defaultProject() {
+    let projectHome = new Project("Home");
+    renderProject(projectHome);
+    projects.push(projectHome);
+    currentProject = projectHome.name;
+}
+
+function initialRun() {
+    deleteAllCards();
+    let projectsLi = document.querySelectorAll(".project-area-ul > li");
+    projectsLi.forEach((li) => {
+        li.remove();
+    })
+    defaultProject();
+    let data = dataBase.getData();
+    console.log(`Data Length: ${data.length}`)
+    if (data == 0) {
+        console.log("No files found");
+            cardListener();
+            projectListener()
         return;
     } else {
         if (data.length == 1) {
+            if (data[0].isProject == true) {
+                console.log("project detected. Rendering Project Separately")
+                renderProject(data[0]);
+                projects.push(data[0])
+                    cardListener();
+                    projectListener()
+                return;
+            } else {
             let card = new ToDoCard(`${data[0].title}-card`, data[0])
-            card.renderShortCard();
-            console.log("drawing once");
-            cardBody.push(card);
-            let cards = document.querySelectorAll(`.card-area > div[class^="todo"]`);
-            cards.classList.add("_inactive");           
+                card.renderShortCard();
+                console.log("drawing one todo");
+                cardBody.push(card);
+                let cards = document.querySelector(`.card-area > div[class^="todo"]`);
+                console.log(cards)
+                cards.classList.add("_inactive"); 
+                    
+            }    
         } else if (data.length > 1) {
             for (let i = data.length - 1; i >= 0; i--) {
-                let card = new ToDoCard(`${data[i].title}-card`, data[i])
-                card.renderShortCard();
-                console.log("drawing cards found in localStorage")
-                cardBody.push(card);
-                let cards = document.querySelectorAll(`.card-area > div[class^="todo"]`);
-                cards.forEach((item) => {
-                    item.classList.add("_inactive")
+                if (data[i].isProject == true) {
+                    console.log(`project detected, drawing project`)
+                    renderProject(data[i]);
+                    projects.push(data[i])
+                    continue;
+                } else {
+                    let card = new ToDoCard(`${data[i].title}-card`, data[i])
+                        card.renderShortCard();
+                        console.log("drawing cards found in localStorage")
+                        cardBody.push(card);
+
+                        let cards = document.querySelectorAll(`.card-area > div[class^="todo"]`);
+                        cards.forEach((item) => {
+                            item.classList.add("_inactive")
                 })
+                }
                 
             }
         }
         cardListener();
+        projectListener()
     }
 }
 
 
 initialRun();
 console.log(cardBody)
+console.log(projects)
+console.log(currentProject);

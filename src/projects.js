@@ -1,12 +1,14 @@
 import { format } from "date-fns";
 export class Project {
     constructor(name, color) {
-        this.name = name;
+        this.name = name.replaceAll(/\s/g,'');
         this.color = color;
     }
     creationDate = format(new Date(), "dd.MM.yyyy - kk:mm")
     delete = false;
     body = [];
+    isProject = true;
+    
 
     setDelete() {
         if (this.delete == true) {

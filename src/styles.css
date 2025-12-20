@@ -130,6 +130,28 @@ textarea {
         margin-bottom: 1rem;
         
     }
+.project-area-ul {
+    display: flex;
+    gap: 0.5rem;
+    flex-direction: column;
+    margin-top: 1rem;
+}
+.project-area-ul > li {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    align-items: center;
+    background: rgb(235, 215, 215);
+    padding: 0.5rem;
+
+}
+.project-area-ul > li > span {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+}
 
 .card-area {
     display: flex;

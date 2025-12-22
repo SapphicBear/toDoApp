@@ -1,12 +1,13 @@
 import { format } from "date-fns";
 export class ToDo {
-    constructor(title, description, dueDate, importance) {
+    constructor(title, description, dueDate, importance, id) {
         this.title = title;
         this.description = description;
         this.dueDate = dueDate;
         this.importance = importance;
-        this.id = "";
+        this.id = id;
     }
+    id;
     creationDate = format(new Date(), "dd.MM.yyyy - kk:mm")
     delete = false;
     notes = [];

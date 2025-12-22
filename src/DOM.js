@@ -15,7 +15,7 @@ export class Element{
             document.querySelector(`.${this.className}`).textContent = this.textContent;
         }
         catch {
-            console.error("no idea")
+            throw new Error("Error trying to write text to textContent, DOM.js line 18")
         }
             
     }

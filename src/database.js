@@ -21,7 +21,7 @@ export const dataBase = {
 
 
     checkData() {
-        const allKeys = Object.keys(localStorage);
+        const allKeys = Object.keys(localStorage).sort();
         return allKeys;
 },
 

@@ -7,7 +7,7 @@ import { Button, Element, Checkbox } from "./DOM.js";
 
 console.log("Javascript connected!");
 let cardBody = [];
-let currentData = dataBase.checkData().sort();
+let currentData;
 let key = 0;
 let projects = [];
 let currentProject = ""
@@ -131,7 +131,7 @@ const eventListeners = {
     },
 
 
-    submitData(arg) {
+    submitData(arg, key) {
         let title, description, dueDate, importance;
         let checklist = [];
         let notes = [];
@@ -148,25 +148,28 @@ const eventListeners = {
             notes.forEach((item) => {
                 userInput.notes.push(item.textContent);
             })
+            userInput.id = key;
             userInput.project = `${currentProject}`;
                 console.log(userInput);
-            const card = new ToDoCard(userInput.title, userInput);
-            cardBody.push(card);
-            card.obj.id = key;
+            // const card = new ToDoCard(userInput.title, userInput);
+            // cardBody.push(card);
+            
             if (!arg) {
-                arg = card.obj;
+                arg = userInput;
             } else {
                 arg = arg;
             }
             dataBase.saveData(`key${key}`, arg);
-            return card;
+            return userInput;
     },
 
     drawCard(todoCard) {
                 todoCard.renderShortCard();
-                console.log(todoCard.title);
-                const card1 = document.querySelector(`.card-area > div[class="todo-${todoCard.obj.title}"]`);
-                    card1.classList.add("_inactive");
+                cardBody.push(todoCard);
+                console.log(todoCard.obj.title);
+                let card1 = document.querySelector(`.card-area > div[class^="todo-${todoCard.obj.title}"]`)
+                console.log(card1)
+                card1.classList.add("_inactive")
     },
 
     openCard(item) {
@@ -291,9 +294,10 @@ function toDoCardListener(obj, todo) {
         if (submitButton.classList.contains("edit")) {
             return;
         } 
-        let card = eventListeners.submitData();
+        let card = eventListeners.submitData(key);
         console.log(card);
         eventListeners.drawCard(card);
+        console.log(cardBody)
         clearModal();
         cardListener();
         ++key;
@@ -342,6 +346,7 @@ function editButtonListener(todo) {
     currentData = dataBase.checkData().sort();
     console.log("beginning")
     let currentId = todo.id;
+    console.log("the current id: " + currentId)
     let currentCard;
     const editSubmitButton = document.querySelector(".submit-button.edit")
     editSubmitButton.addEventListener("click", function () {
@@ -353,25 +358,27 @@ function editButtonListener(todo) {
                 console.log("Looking for match...");
             }
         }
-        console.log(currentData)
+        console.log(currentCard)
         for (let i = 0; i < currentData.length; i++) {
             if (currentData[i] !== `key${currentId}`) {
                 console.log("Key not Found");
                 continue;
             } else if (currentData[i] == `key${currentId}`) {
                 console.log("Key Found");
-                console.log(currentData[i]);
-                console.log(currentData[i]);
-                localStorage.removeItem(`key${currentData[i]}`);
-                currentCard.obj.title = document.getElementById("title").value;
-                currentCard.obj.description = document.getElementById("description").value;
-                currentCard.obj.dueDate = document.getElementById("due-date").value;
-                currentCard.obj.importance = document.getElementById("importance").value;
-                currentCard.obj.id = currentId;
-                dataBase.saveData(`key${currentId}`, currentCard.obj);
-                
+                // localStorage.removeItem(`key${currentId}`);
+                todo.title = document.getElementById("title").value;
+                todo.description = document.getElementById("description").value;
+                todo.dueDate = document.getElementById("due-date").value;
+                todo.importance = document.getElementById("importance").value;
+                let notes = document.querySelectorAll(`ul > li > p`);
+                notes.forEach((item) => {
+                todo.notes.push(item.textContent);
+                })
+                eventListeners.submitData(todo, currentId);
+                todo.id = currentId;
+                dataBase.saveData(`key${currentId}`, todo);
                 modal.close();
-                console.log("data saved");
+                initialRun();
                 break;
             } else {
                 throw new Error("No key!");
@@ -439,9 +446,7 @@ function renderProject(project) {
 
 function deleteAllCards() {
     let cards = document.querySelectorAll(`.card-area > div[class^="todo"]`);  
-    for (let i = 0; i < cardBody.length; i++) {
-        cardBody.pop();
-    }
+    cardBody = [];
     cards.forEach((item) => {
             item.remove();
         })
@@ -477,6 +482,7 @@ function defaultProject() {
 }
 
 function initialRun() {
+    // key = 0;
     deleteAllCards();
     let projectsLi = document.querySelectorAll(".project-area-ul > li");
     projectsLi.forEach((li) => {
@@ -484,6 +490,7 @@ function initialRun() {
     })
     defaultProject();
     let data = dataBase.getData();
+    console.log(data)
     console.log(`Data Length: ${data.length}`)
     console.log(data)
     if (data == 0) {
@@ -502,6 +509,7 @@ function initialRun() {
                 return;
             } else {
             let card = new ToDoCard(`${data[0].title}-card`, data[0])
+            console.log(data[0].id)
                 localStorage.removeItem(`key${data[0].id}`)
                 card.renderShortCard();
                 console.log("drawing one todo");
@@ -544,14 +552,11 @@ function initialRun() {
         })
         cardListener();
         projectListener()
+        console.log(dataBase.checkData())
+        console.log(cardBody)
     }
 }
 
-
 initialRun();
-currentData = dataBase.checkData().sort();
-console.log(cardBody)
-console.log(projects)
-console.log(currentProject);
-console.log(key)
+currentData = dataBase.checkData()
 console.log(currentData)

@@ -81,6 +81,26 @@ textarea {
     }
 }
 
+.checklist {
+    display: flex;
+    flex-direction: column;
+    
+    input#checklist {
+        max-width: 18ch
+    }
+    .checklist-area-div {
+    background: rgb(247, 175, 175);
+    height: 100px;
+    max-width: 30ch;
+    overflow-y: scroll;
+     > ul > li {
+            display: flex;
+            justify-content: space-between;
+            margin-right: 1rem;
+        }
+    }
+}
+
 .wrapper {
     display: grid;
     gap: 0 2rem;

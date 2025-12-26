@@ -44,7 +44,11 @@
                 </div>
                 <div class="userInfo-row">
                     <label for="importance">Importance</label>
-                    <input type="radio" name="importance" id="importance">
+                    <select name="importance" id="importance">
+                        <option value="not-important">Not Important</option>
+                        <option value="important">Important</option>
+                        <option value="very-important">Very Important</option>
+                    </select>
                 </div>
                 
                 <hr>
@@ -59,6 +63,18 @@
                                 </ul>
                             </div>
                     </div>
+                </div>
+                <div class="checklist">
+                     <div class="userInfo-row">
+                        <label for="checklist">Checklist:</label>
+                        <input type="text" name="checklist" id="checklist">
+                        <button class="add-checklist" type="button">Add</button>
+                            <div class="checklist-area-div">
+                                <ul class="checklist-area">
+                                    
+                                </ul>
+                            </div>
+                     </div>
                 </div>
                 </div>
             </form>

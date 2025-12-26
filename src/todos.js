@@ -15,15 +15,6 @@ export class ToDo {
     project = [];
 
 
-    setImportance() {
-        if (this.importance == true) {
-            this.importance = false;
-        } else if (this.importance == false) {
-            this.importance = true;
-        } else {
-            this.importance = false;
-        }
-    }
     setDelete() {
         if (this.delete == false) {
             this.delete = true;

@@ -35,6 +35,7 @@ class ToDoCard {
         this.notesArea = new Element("ul", `.todo-${this.name}`, `${this.name}-notes`);
         this.checklist = new Element("ul", `.todo-${this.name}`, `${this.name}-checklist-area`);
         this.editButton = new Button(`.todo-${this.name}`, `todo-${this.name}-editButton`, "Edit");
+        this.deleteButton = new Button(`.todo-${this.name}`, `todo-${this.name}-deleteButton`, "Delete");
     }
     toDoCard = [];
     project = [];
@@ -62,7 +63,7 @@ class ToDoCard {
     }
 
     renderFullCard() {
-        this.toDoCard.push(this.card, this.title, this.desc, this.dueDate, this.importance, this.notesArea, this.checklist, this.editButton);
+        this.toDoCard.push(this.card, this.title, this.desc, this.dueDate, this.importance, this.notesArea, this.checklist, this.editButton, this.deleteButton);
         this.toDoCard.forEach((item) => {
             item.makeElement();
         })
@@ -84,14 +85,14 @@ class ToDoCard {
         this.obj.checklist.forEach((item) => {
             this.name.replaceAll(/\s/g,'');
             const li = new Element("li", `.${this.name}-checklist-area`, `${this.name}-checklist-${checkCount}`,`${item}`);
-            const checkmark = new Checkbox(`.${this.name}-checklist-${checkCount}`, `${this.name}-checkbox-${checkCount}`);
+            // const checkmark = new Checkbox(`.${this.name}-checklist-${checkCount}`, `${this.name}-checkbox-${checkCount}`);
             
             li.makeElement();
-            checkmark.makeElement();
-            const checkbox = document.querySelector(`.${this.name}-checkbox-${checkCount}`);
-            checkbox.setAttribute("id", `${this.name}-checkbox-${checkCount}`);
-            checkbox.setAttribute("type", "checkbox");
-            checkbox.removeAttribute("class");
+            // checkmark.makeElement();
+            // const checkbox = document.querySelector(`.${this.name}-checkbox-${checkCount}`);
+            // checkbox.setAttribute("id", `${this.name}-checkbox-${checkCount}`);
+            // checkbox.setAttribute("type", "checkbox");
+            // checkbox.removeAttribute("class");
             ++checkCount;
             })
     } else {
@@ -195,13 +196,14 @@ const eventListeners = {
         cardBody.forEach((card) => {
             if ("todo-" + card.name === active.classList[0])  {
                 card.renderFullCard();
+                deleteButtonCardListener(active.children[7], card)
                 toDoCardListener(active.children[6], card.obj);
             let extras = document.querySelectorAll(`.todo-${card.name}`);
                 extras.forEach((extra) => {
                     if (!extra.className.includes("_active")) {
                         extra.remove();
                     } else {
-                        return;
+                        console.log("No extras");
                     }
                 })
             } 
@@ -276,51 +278,38 @@ function toDoCardListener(obj, todo) {
     const projectModalSubmit = document.querySelector(".project-modal-submit");
     
     
-    openModal.addEventListener("click", () => {
-        modal.showModal();
+openModal.addEventListener("click", () => {
+    modal.showModal();
 })
     
-    closeModal.addEventListener("click", () => {
-        if (document.querySelector(".submit-button").classList.contains("edit")) {
-            document.querySelector(".submit-button").classList.remove("edit");
-        }
-        clearModal();
-        modal.close();
+closeModal.addEventListener("click", () => {
+    if (document.querySelector(".submit-button").classList.contains("edit")) {
+        document.querySelector(".submit-button").classList.remove("edit");
+    }
+    clearModal();
+    modal.close();
 
 })
-    addNoteButton.addEventListener("click", function () {
-        eventListeners.addNote(document.getElementById("notes").value);
-        eventListeners.deleteNoteButton();
-    });
+addNoteButton.addEventListener("click", function () {
+    eventListeners.addNote(document.getElementById("notes").value);
+    eventListeners.deleteNoteButton();
+});
 
 addChecklistButton.addEventListener("click", function () {
     eventListeners.addCheckListItem(document.getElementById("checklist").value);
     eventListeners.deleteNoteButton();
 })
 
-    function clearModal() {
-            document.getElementById("title").value = "";
-            document.getElementById("description").value = "";
-            document.getElementById("due-date").value = "";
-            document.getElementById("importance").value = "";
-            document.getElementById("notes").value = "";
-            document.querySelectorAll(`ul.notes-area > li`).forEach((item) => {
-                item.remove();
-            });
-            document.querySelectorAll(`ul.checklist-area > li`).forEach((item) => {
-                item.remove();
-            })
-    }
-    submitButton.addEventListener("click", () => {
-        if (submitButton.classList.contains("edit")) {
-            return;
-        } 
-        let card = eventListeners.submitData(userInput, key);
-        eventListeners.drawCard(card);
-        clearModal();
-        cardListener();
-        ++key;
-        modal.close();
+submitButton.addEventListener("click", () => {
+    if (submitButton.classList.contains("edit")) {
+        return;
+    } 
+    let card = eventListeners.submitData(userInput, key);
+    eventListeners.drawCard(card);
+    clearModal();
+    cardListener();
+    ++key;
+    modal.close();
         
 })
 
@@ -337,6 +326,21 @@ projectModalSubmit.addEventListener("click", function () {
     projectModal.close();
     projectListener();
 })
+
+function clearModal() {
+            document.getElementById("title").value = "";
+            document.getElementById("description").value = "";
+            document.getElementById("due-date").value = "";
+            document.getElementById("importance").value = "";
+            document.getElementById("notes").value = "";
+            document.getElementById("checklist").value = "";
+            document.querySelectorAll(`ul.notes-area > li`).forEach((item) => {
+                item.remove();
+            });
+            document.querySelectorAll(`ul.checklist-area > li`).forEach((item) => {
+                item.remove();
+            })
+    }
 
 function editToDo(todo) {
     
@@ -365,6 +369,29 @@ function editToDo(todo) {
             
     modal.showModal();
         editButtonListener(todo);
+}
+function checkForDelete() {
+    cardBody.forEach((item) => {
+        if (item.obj.delete == false) {
+            return;
+        } else if (item.obj.delete == true) {
+            localStorage.removeItem(`key${item.obj.id}`)
+            initialRun();
+        }
+    })
+}
+
+
+function deleteButtonCardListener(button, card) {
+    const deleteButtonCard = button
+    console.log(deleteButtonCard)
+    deleteButtonCard.addEventListener("click", function () {
+        console.log("Hi")
+        card.obj.setDelete();
+        console.log(card.obj.delete)
+        let currentId = card.obj.id;
+        checkForDelete();
+    })
 }
 
 function editButtonListener(todo) {
@@ -511,17 +538,20 @@ function defaultProject() {
 
 function initialRun() {
     deleteAllCards();
+
     let projectsLi = document.querySelectorAll(".project-area-ul > li");
     projectsLi.forEach((li) => {
         li.remove();
     })
+
     defaultProject();
+
     let data = dataBase.getData();
     if (data == 0) {
         console.log("No files found");
             cardListener();
             projectListener()
-        return;
+            return;
     } else {
         if (data.length == 1) {
             if (data[0].isProject == true) {
@@ -529,7 +559,7 @@ function initialRun() {
                 projects.push(data[0])
                     cardListener();
                     projectListener()
-                return;
+                    return;
             } else {
             let card = new ToDoCard(`${data[0].title}-card`, data[0])
                 localStorage.removeItem(`key${data[0].id}`)

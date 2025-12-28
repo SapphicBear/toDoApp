@@ -34,8 +34,9 @@ class ToDoCard {
         this.importance = new Element("h4", `.todo-${this.name}`, `${this.name}-importance`, this.obj.importance);
         this.notesArea = new Element("ul", `.todo-${this.name}`, `${this.name}-notes`);
         this.checklist = new Element("ul", `.todo-${this.name}`, `${this.name}-checklist-area`);
-        this.editButton = new Button(`.todo-${this.name}`, `todo-${this.name}-editButton`, "Edit");
-        this.deleteButton = new Button(`.todo-${this.name}`, `todo-${this.name}-deleteButton`, "Delete");
+        this.buttonArea = new Element("div", `.todo-${this.name}`, `todo-${this.name}-button-area`)
+        this.editButton = new Button(`.todo-${this.name}-button-area`, `todo-${this.name}-editButton`, "Edit");
+        this.deleteButton = new Button(`.todo-${this.name}-button-area`, `todo-${this.name}-deleteButton`, "Delete");
     }
     toDoCard = [];
     project = [];
@@ -63,7 +64,7 @@ class ToDoCard {
     }
 
     renderFullCard() {
-        this.toDoCard.push(this.card, this.title, this.desc, this.dueDate, this.importance, this.notesArea, this.checklist, this.editButton, this.deleteButton);
+        this.toDoCard.push(this.card, this.title, this.desc, this.dueDate, this.importance, this.notesArea, this.checklist, this.buttonArea, this.editButton, this.deleteButton);
         this.toDoCard.forEach((item) => {
             item.makeElement();
         })
@@ -196,8 +197,8 @@ const eventListeners = {
         cardBody.forEach((card) => {
             if ("todo-" + card.name === active.classList[0])  {
                 card.renderFullCard();
-                deleteButtonCardListener(active.children[7], card)
-                toDoCardListener(active.children[6], card.obj);
+                deleteButtonCardListener(active.children[6].children[1], card)
+                toDoCardListener(active.children[6].children[0], card.obj);
             let extras = document.querySelectorAll(`.todo-${card.name}`);
                 extras.forEach((extra) => {
                     if (!extra.className.includes("_active")) {
@@ -504,8 +505,7 @@ function deleteAllCards() {
     cardBody = [];
     cards.forEach((item) => {
             item.remove();
-        })
-}
+        })}
 
 function changePage(project) {
     let data = dataBase.getData();
@@ -529,6 +529,17 @@ function changePage(project) {
     cardListener();
 }
 
+// function defaultCard() {
+//     let render = [];
+//     let card = new Element("div", ".card-area", "default-card", "", "todo-default-card")
+//     let c2a = new Element("h2", ".default-card", "call-to-action", "Click 'New ToDo' to make a ToDo!");
+//     render.push(card);
+//     render.push(c2a);
+//     render.forEach((item) => {
+//         item.makeElement();
+//     })
+// }
+
 function defaultProject() {
     let projectHome = new Project("Home");
     renderProject(projectHome);
@@ -551,6 +562,7 @@ function initialRun() {
         console.log("No files found");
             cardListener();
             projectListener()
+            // defaultCard()
             return;
     } else {
         if (data.length == 1) {
@@ -559,6 +571,7 @@ function initialRun() {
                 projects.push(data[0])
                     cardListener();
                     projectListener()
+                    // defaultCard()
                     return;
             } else {
             let card = new ToDoCard(`${data[0].title}-card`, data[0])

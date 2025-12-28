@@ -29,6 +29,7 @@ textarea {
     font-family: inherit;
 }
 
+
 .user-input-form {
     display: grid;
     position: relative;
@@ -138,6 +139,24 @@ textarea {
         }
     }
 }
+.button-area {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    > button {
+        padding: 0.5rem;
+        border: 1px solid rgba(255, 158, 234, 0.575);
+        border-radius: 10px;
+        background: rgb(116, 85, 255);
+        color: rgb(248, 254, 255);
+        font-weight: 700;
+            &:hover {
+                transform: scale(1);
+                filter: brightness(95%)
+            }
+}
+}
 
 .projects {
     padding: 1rem;
@@ -187,29 +206,88 @@ textarea {
     }
 }
 
+.default-card {
+    display: flex;
+    padding: 1rem;
+    gap: 1rem;
+    background: rgb(255, 203, 203);
+    border-radius: 25px;
+    width: 300px;
+    opacity: 0.7;
+    justify-content: center;
+    > .call-to-action {
+        padding: 0.5rem;
+        border-radius: 25px;
+        background: rgb(255, 230, 230);
+        width: 20ch;
+        grid-column: 1 ;
+        text-align: center;
+    }
+}
+
 div[class^="todo"] {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(4);
     padding: 1rem;
     gap: 1rem;
-    
     background: rgb(255, 203, 203);
     border-radius: 25px;
     width: 300px;
 
-    > h3:hover {
+    > h3 {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    &:hover {
         background: rgb(255, 146, 210);
+    }
+}
+    &[class$="_active"] {
+        > h3 {
+            overflow-wrap: anywhere;
+            white-space: wrap;
+
+        }
     }
 
     & > p[class$="description"] {
         grid-column: 1 / span 2;
         grid-row: 2 / span 2;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
     & > * {
         padding: 1rem;
         border-radius: 25px;
         background: white;
         width: stretch;
+    }
+    > div[class$="button-area"] {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.5rem;
+        button {
+            width: fit-content;
+            height: fit-content;
+            padding: 0.5rem;
+            border-radius: 10px;
+            border: 1px solid rgba(175, 22, 106, 0.247);
+        }
+        :nth-child(1) {
+            background-color: rgba(102, 255, 102, 0.123);
+            &:hover {
+                background-color: rgba(114, 255, 71, 0.548);
+            }
+        }
+        :nth-child(2) {
+            background: rgb(255, 168, 168);
+            &:hover {
+                background-color: rgb(255, 126, 126);
+            }
+        }
     }
 }
 

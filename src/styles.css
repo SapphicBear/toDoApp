@@ -2,6 +2,12 @@
     line-height: 1.5;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     box-sizing: border-box;
+    --default-br: 15px;
+    --main-color: rgb(255, 70, 116);
+    --accent-color: rgb(255, 224, 158);
+    --black: rgb(24, 0, 18);
+    --white: rgb(244, 249, 255);
+    --drop-shadow: rgba(255, 0, 136, 0.486);
 
 }
 body, 
@@ -113,6 +119,7 @@ textarea {
 
 }
 .sidebar {
+    box-shadow: 5px 0 20px var(--drop-shadow);
     background: rgb(160, 163, 212);
     display: flex;
     flex-direction: column;
@@ -147,15 +154,11 @@ textarea {
     > button {
         padding: 0.5rem;
         border: 1px solid rgba(255, 158, 234, 0.575);
-        border-radius: 10px;
+        border-radius: calc(var(--default-br) - 5px);
         background: rgb(116, 85, 255);
         color: rgb(248, 254, 255);
         font-weight: 700;
-            &:hover {
-                transform: scale(1);
-                filter: brightness(95%)
-            }
-}
+    }
 }
 
 .projects {
@@ -183,15 +186,36 @@ textarea {
     margin-left: 1rem;
     margin-right: 1rem;
     align-items: center;
-    background: rgb(235, 215, 215);
+    background: var(--accent-color);
     padding: 0.5rem;
+    border-radius: calc(var(--default-br) - 5px);
+    &:hover {
+        transform: scale(1.03);
+    }
+
+    > div[class^="separator"] {
+        display: flex;
+        gap: 1rem;
+        > button {
+            border: none;
+            width: 20px;
+            height: 20px;
+            font-weight: 800;
+            text-align: center;
+            background: rgba(255, 0, 0, 0.384);
+            color: rgb(46, 0, 0);
+            padding: 0;
+
+        }
+        > span[class^="project-color"] {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+    }
+    }
 
 }
-.project-area-ul > li > span {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-}
+
 
 .card-area {
     display: flex;
@@ -202,10 +226,10 @@ textarea {
     justify-content: space-evenly;
     
     > div {
-        box-shadow: rgba(160, 0, 107, 0.616) 0 5px 10px;
+        box-shadow: var(--drop-shadow) 0 5px 10px;
     }
 }
-
+/* 
 .default-card {
     display: flex;
     padding: 1rem;
@@ -223,7 +247,7 @@ textarea {
         grid-column: 1 ;
         text-align: center;
     }
-}
+} */
 
 div[class^="todo"] {
     display: grid;
@@ -232,15 +256,19 @@ div[class^="todo"] {
     padding: 1rem;
     gap: 1rem;
     background: rgb(255, 203, 203);
-    border-radius: 25px;
+    border-radius: var(--default-br);
     width: 300px;
 
     > h3 {
+        position: relative;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
     &:hover {
         background: rgb(255, 146, 210);
+    }
+    &::after {
+        content: "Title";
     }
 }
     &[class$="_active"] {
@@ -250,6 +278,9 @@ div[class^="todo"] {
 
         }
     }
+    & > p[class$="due-date"]::after {
+        content: "Due Date"
+    }
 
     & > p[class$="description"] {
         grid-column: 1 / span 2;
@@ -257,23 +288,55 @@ div[class^="todo"] {
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+            &::after {
+            content: "Description";
+        }
     }
+
+    & > h4[class$="importance"]::after {
+        content: "Importance";
+    }
+
+    & > ul[class$="checklist-area"]::after {
+        content: "Checklist";
+    }
+
+    & > ul[class$="notes"]::after {
+        content: "Notes";
+    }
+
     & > * {
+        position: relative;
         padding: 1rem;
-        border-radius: 25px;
+        border-radius: var(--default-br);
         background: white;
         width: stretch;
+        min-height: 30px;
+        &::after {
+            color: rgba(66, 0, 0, 0.541);
+            font-size: 12px;
+            font-weight: 500;
+            position:absolute;
+            top:0px;
+            left:0px;
+            margin-left:0.5rem;
+        }
     }
     > div[class$="button-area"] {
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 0.5rem;
+        &::after {
+            content: "Button area";
+            top: -2px;
+            margin-left: 2.2rem;
+        }
         button {
             width: fit-content;
             height: fit-content;
             padding: 0.5rem;
-            border-radius: 10px;
+            border-radius: var(--default-br);
             border: 1px solid rgba(175, 22, 106, 0.247);
         }
         :nth-child(1) {

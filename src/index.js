@@ -54,8 +54,6 @@ class ToDoCard {
     return toDo;
 }
 
-
-
     renderShortCard() {
         this.toDoCard.push(this.card, this.title, this.desc, this.dueDate);
         this.toDoCard.forEach((item) => {
@@ -460,6 +458,7 @@ function projectHandler(item) {
     projects.forEach((project) => {
         if (item.className.includes(`${project.name}`)) {
             currentProject = `${project.name}`;
+            console.log(currentProject)
             deleteAllCards();
             changePage(project);
         } else {
@@ -488,16 +487,29 @@ function createProject(name, color) {
 }
 
 function renderProject(project) {
+    
     ++projectNum
     let li = new Element("li", ".project-area-ul", `project-${projectNum}-${project.name}`, `${project.name}`);
-    if (!project.color) {
-         li.makeElement();
-    } else {
-        let span = new Element("span", `.project-${projectNum}-${project.name}`, `project-color-${projectNum}-${project.name}`);
+    let separator = new Element("div", `.project-${projectNum}-${project.name}`, `separator-${projectNum}-${project.name}`);
+    let deleteButton = new Button(`.separator-${projectNum}-${project.name}`, `project-delete-${projectNum}-${project.name}`, "X")
+    if (project.name == "Home") {
         li.makeElement();
+        return;
+    } else {
+
+    } if (!project.color) {
+         li.makeElement();
+         separator.makeElement();
+         deleteButton.makeElement();
+    } else {
+        let span = new Element("span", `.separator-${projectNum}-${project.name}`, `project-color-${projectNum}-${project.name}`);
+        li.makeElement();
+        separator.makeElement();
         span.makeElement();
+        deleteButton.makeElement();
         document.querySelector(`.project-color-${projectNum}-${project.name}`).style.backgroundColor = `${project.color}`
     }
+
 }
 
 function deleteAllCards() {
@@ -512,8 +524,8 @@ function changePage(project) {
     console.log(`Data Length: ${data.length}`)
     if (data == 0) {
         console.log("No files found");
-            cardListener();
             projectListener()
+            projectDeleteListener()
         return;
     }
     console.log(data)
@@ -521,12 +533,37 @@ function changePage(project) {
         if (data[i].project === project.name) {
             let card = new ToDoCard(`${data[i].title}-card`, data[i])
                 card.renderShortCard();
+                cardBody.push(card)
                 let cards = document.querySelectorAll(`.card-area > div[class^="todo"]`);
                         cards.forEach((item) => {
                             item.classList.add("_inactive")})
-        }
-    } 
-    cardListener();
+        }}
+        cardListener();
+        projectDeleteListener()
+}
+function projectDeleteListener() {
+    let projectDelete = document.querySelectorAll(`button[class^="project-delete"]`);
+    console.log(projectDelete)
+    for (let i = 0; i < projectDelete.length; i++) {
+        projectDelete[i].addEventListener("click", function () {
+            let classname = projectDelete[i].className;
+            console.log(projects);
+            projects.forEach((item) => {
+                if (classname.includes(item.name)) {
+                    console.log(item)
+                    item.delete = true;
+                    localStorage.removeItem(item.name)
+                }
+            })
+            let toDelete = projectDelete[i].parentElement.parentElement;
+            toDelete.remove()
+            deleteProject();
+        })
+    }
+}
+function deleteProject() {
+    let index = projects.indexOf((item) => item.delete == true)
+    projects.slice(index, 1)
 }
 
 // function defaultCard() {
@@ -562,6 +599,7 @@ function initialRun() {
         console.log("No files found");
             cardListener();
             projectListener()
+            projectDeleteListener()
             // defaultCard()
             return;
     } else {
@@ -571,6 +609,7 @@ function initialRun() {
                 projects.push(data[0])
                     cardListener();
                     projectListener()
+                    projectDeleteListener()
                     // defaultCard()
                     return;
             } else {
@@ -613,6 +652,7 @@ function initialRun() {
         })
         cardListener();
         projectListener()
+        projectDeleteListener()
     }
 }
 

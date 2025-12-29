@@ -308,7 +308,7 @@ a:visited {
     grid-column: 1;
         background: var(--white);
         height: stretch;
-        /* margin-bottom: 2rem; */
+        height: 100%;
         box-shadow: inset var(--drop-shadow) 0 3px 2px;
         
     }

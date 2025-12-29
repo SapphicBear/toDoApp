@@ -302,13 +302,19 @@ addChecklistButton.addEventListener("click", function () {
 submitButton.addEventListener("click", () => {
     if (submitButton.classList.contains("edit")) {
         return;
-    } 
-    let card = eventListeners.submitData(userInput, key);
+    }
+    if (document.getElementById("due-date").value == "") {
+        alert("Please enter a valid date")
+        return
+    } else {
+        let card = eventListeners.submitData(userInput, key);
     eventListeners.drawCard(card);
     clearModal();
     cardListener();
     ++key;
     modal.close();
+    }
+    
         
 })
 
@@ -320,10 +326,16 @@ projectModalClose.addEventListener("click", function () {
 })
 
 projectModalSubmit.addEventListener("click", function () {
-    const project = createProject(document.getElementById("project-name").value, document.getElementById("project-color").value);
-    renderProject(project);
-    projectModal.close();
-    projectListener();
+    if (document.getElementById("project-name").value == "") {
+        alert("Please enter a valid name");
+        
+    } else {
+        const project = createProject(document.getElementById("project-name").value, document.getElementById("project-color").value);
+        renderProject(project);
+        projectModal.close();
+        projectListener();
+        console.log("here")
+    }
 })
 
 function clearModal() {

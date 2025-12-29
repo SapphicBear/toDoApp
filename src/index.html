@@ -8,20 +8,21 @@
 <body>
 
     <dialog class="project-modal" id="project-modal">
+        <div class="project-wrapper">
         <button class="close-button project-modal" type="button">X</button>
         <h2>New Project</h2>
         <form action="">
             <div class="project-input">
-                <label for="project-name">Project Name</label>
-                <input type="text" name="project-name" id="project-name" required>
+                <label for="project-name">Name:</label>
+                <input type="text" name="project-name" id="project-name" required placeholder="Enter a Project name...">
             </div>
             <div class="project-color">
-                <label for="project-color">Color</label>
+                <label for="project-color">Color:</label>
                 <input type="color" name="project-color" id="project-color">
             </div>
         </form>
-        <button class="project-modal-submit">Submit</button>
-
+        <button class="project-modal-submit" type="button">Submit</button>
+        </div>
     </dialog>
 
     <dialog class="modal" id="modal">
@@ -32,15 +33,15 @@
                 <div class="user-input-area">
                 <div class="userInfo-row">
                     <label for="title">Title</label>
-                    <input type="text" name="title" id="title">
+                    <input type="text" name="title" id="title" placeholder="Enter a ToDo name...">
                 </div>
                 <div class="userInfo-row">
                     <label for="description">Description</label>
-                    <textarea name="description" id="description" cols="40" rows="4"></textarea>
+                    <textarea name="description" id="description" cols="40" rows="4" placeholder="Add a description..."></textarea>
                 </div>
                 <div class="userInfo-row">
                     <label for="due-date">Due Date</label>
-                    <input type="date" name="due-date" id="due-date">
+                    <input type="date" name="due-date" id="due-date" required>
                 </div>
                 <div class="userInfo-row">
                     <label for="importance">Importance</label>
@@ -52,7 +53,7 @@
                 </div>
                 
                 <hr>
-                <div class="notes-area">
+                <div class="notes">
                     <div class="userInfo-row">
                         <label for="notes">Notes:</label>
                         <input type="text" name="notes" id="notes">
@@ -78,18 +79,18 @@
                 </div>
                 </div>
             </form>
-            <button class="submit-button">Submit</button>
+            <button class="submit-button" type="button">Submit</button>
         </div>
     </dialog>
     <div class="wrapper">
     <div class="sidebar">
         <div class="logo-area">
             <div class="img"></div>
-            <h3 class="title">Title</h3>
+            <h3 class="title">ToDo in the Browser</h3>
             <div class="info-area">
-                <p>info about the app</p>
-                <p>more info</p>
-                <a href="#">links</a>
+                <p>Welcome to ToDo in the Browser! An amature application made as a project for the Odin Project!</p>
+                <p>Created by SapphicBear!</p>
+                
             </div>
         </div>
         <div class="button-area">
@@ -110,10 +111,14 @@
  
     </div>
     <footer>
-        <div class="footer-info">footer information</div>
+        <div class="footer-info">
+            <p>Created by SapphicBear 2025</p>
+            <p>No gen-ai was used in any instance of this project, AI is shit. Code or gtfo</p>
+        </div>
         <nav>
-            <ul class="links">
-                examplesd
+            <ul class="links"> Links:
+                <li><a href="https://github.com/SapphicBear" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                <li><a href="https://www.theodinproject.com/" target="_blank" rel="noopener noreferrer">The Odin Project</a></li>
             </ul>
         </nav>
     </footer>
